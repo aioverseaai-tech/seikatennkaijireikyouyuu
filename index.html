@@ -1,0 +1,272 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.stage{display:flex;justify-content:center;padding:16px 0 24px;background:var(--color-background-secondary);border-radius:var(--border-radius-lg)}
+.phone{width:320px;height:640px;border-radius:38px;border:7px solid #2C2C2A;background:var(--color-background-primary);display:flex;flex-direction:column;overflow:hidden;position:relative}
+.status-bar{background:var(--color-background-primary);padding:10px 20px 4px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+.status-time{font-size:12px;font-weight:500;color:var(--color-text-primary)}
+.status-icons{display:flex;gap:5px;align-items:center}
+.status-icons span{font-size:11px;color:var(--color-text-primary)}
+.app-header{background:var(--color-background-primary);border-bottom:0.5px solid var(--color-border-tertiary);padding:8px 16px 10px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.app-logo{display:flex;align-items:center;gap:7px}
+.logo-dot{width:26px;height:26px;border-radius:8px;background:#FAC775;display:flex;align-items:center;justify-content:center;font-size:13px}
+.app-name{font-size:15px;font-weight:500;color:var(--color-text-primary)}
+.icon-btn{background:none;border:none;width:32px;height:32px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--color-text-secondary);font-size:15px}
+.icon-btn:active{background:var(--color-background-secondary)}
+.screen{flex:1;overflow:hidden;display:none;flex-direction:column}
+.screen.active{display:flex}
+.feed-area{flex:1;overflow-y:auto;padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.feed-area::-webkit-scrollbar{display:none}
+.post-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:14px;overflow:hidden}
+.card-img{width:100%;height:160px;object-fit:cover;display:block;background:var(--color-background-secondary)}
+.card-img-placeholder{width:100%;height:140px;background:#FAEEDA;display:flex;align-items:center;justify-content:center;font-size:28px;color:#EF9F27}
+.card-info{padding:9px 11px 8px}
+.card-comment{font-size:13px;color:var(--color-text-primary);line-height:1.5;margin-bottom:7px}
+.card-meta{display:flex;justify-content:space-between;align-items:center}
+.meta-store{display:flex;align-items:center;gap:5px}
+.store-tag{font-size:10px;font-weight:500;background:#FAEEDA;color:#633806;padding:2px 7px;border-radius:10px}
+.meta-time{font-size:10px;color:var(--color-text-tertiary)}
+.like-row{display:flex;align-items:center;gap:3px}
+.like-btn{background:none;border:0.5px solid var(--color-border-tertiary);border-radius:12px;padding:3px 8px;font-size:11px;cursor:pointer;color:var(--color-text-secondary);display:flex;align-items:center;gap:3px;line-height:1}
+.like-btn.liked{background:#FAEEDA;border-color:#EF9F27;color:#633806}
+.bottom-nav{background:var(--color-background-primary);border-top:0.5px solid var(--color-border-tertiary);padding:8px 0 14px;display:flex;align-items:center;justify-content:space-around;flex-shrink:0}
+.nav-btn{background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;padding:0 20px;color:var(--color-text-tertiary);font-size:10px}
+.nav-btn.active{color:#BA7517}
+.nav-icon{font-size:18px;line-height:1}
+.nav-post-btn{width:48px;height:48px;border-radius:24px;background:#BA7517;border:none;cursor:pointer;color:#fff;font-size:24px;display:flex;align-items:center;justify-content:center;margin-top:-20px}
+.nav-post-btn:active{opacity:.85}
+.post-screen{flex:1;display:none;flex-direction:column;background:var(--color-background-primary)}
+.post-screen.active{display:flex}
+.post-header{padding:12px 16px;border-bottom:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;gap:10px;flex-shrink:0}
+.back-btn{background:none;border:none;font-size:18px;cursor:pointer;color:var(--color-text-secondary);padding:0 4px}
+.post-title{font-size:15px;font-weight:500;color:var(--color-text-primary);flex:1}
+.do-post-btn{background:#BA7517;color:#fff;border:none;border-radius:16px;padding:6px 14px;font-size:13px;font-weight:500;cursor:pointer}
+.do-post-btn:disabled{opacity:.4}
+.post-body{flex:1;overflow-y:auto;padding:14px 14px;display:flex;flex-direction:column;gap:12px}
+.post-body::-webkit-scrollbar{display:none}
+.img-zone{border:1.5px dashed var(--color-border-secondary);border-radius:14px;height:180px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;cursor:pointer;position:relative;background:var(--color-background-secondary)}
+.img-zone.filled{border-style:solid;border-color:#EF9F27;background:transparent;padding:0;overflow:hidden}
+.img-zone.filled img{width:100%;height:100%;object-fit:cover;border-radius:12px}
+.img-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.zone-icon{font-size:28px;color:var(--color-text-tertiary)}
+.zone-hint{font-size:12px;color:var(--color-text-secondary)}
+.comment-field input{width:100%;border:0.5px solid var(--color-border-tertiary);border-radius:10px;padding:10px 12px;font-size:14px;color:var(--color-text-primary);font-family:var(--font-sans);background:var(--color-background-primary)}
+.comment-field input:focus{outline:none;border-color:#EF9F27}
+.auto-tags{display:flex;gap:6px;flex-wrap:wrap}
+.auto-tag{font-size:11px;color:var(--color-text-secondary);background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:10px;padding:4px 9px;display:flex;align-items:center;gap:4px}
+.settings-screen{flex:1;display:none;flex-direction:column}
+.settings-screen.active{display:flex}
+.settings-body{flex:1;padding:16px 14px;display:flex;flex-direction:column;gap:14px}
+.set-label{font-size:12px;color:var(--color-text-secondary);margin-bottom:5px;font-weight:500}
+.set-input{width:100%;border:0.5px solid var(--color-border-tertiary);border-radius:10px;padding:10px 12px;font-size:14px;color:var(--color-text-primary);font-family:var(--font-sans);background:var(--color-background-primary)}
+.set-input:focus{outline:none;border-color:#EF9F27}
+.save-btn{width:100%;padding:13px;background:#BA7517;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:500;cursor:pointer;margin-top:4px}
+.empty-feed{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:var(--color-text-secondary);font-size:13px;text-align:center;padding:20px}
+.empty-feed .big{font-size:36px}
+</style>
+
+<div class="stage">
+  <div class="phone">
+    <div class="status-bar">
+      <span class="status-time" id="clockDisplay">9:41</span>
+      <div class="status-icons"><span>&#9679;&#9679;&#9679;</span><span>&#9651;</span><span>&#9646;</span></div>
+    </div>
+
+    <div class="app-header">
+      <div class="app-logo">
+        <div class="logo-dot">&#11088;</div>
+        <span class="app-name">成功事例シェア</span>
+      </div>
+      <button class="icon-btn" onclick="showSettings()">&#9881;</button>
+    </div>
+
+    <div class="screen active" id="feedScreen">
+      <div class="feed-area" id="feedArea"></div>
+      <div class="bottom-nav">
+        <button class="nav-btn active" onclick="showFeed()">
+          <span class="nav-icon">&#8962;</span>ホーム
+        </button>
+        <button class="nav-post-btn" onclick="showPost()">&#43;</button>
+        <button class="nav-btn" onclick="showSettings()">
+          <span class="nav-icon">&#9881;</span>設定
+        </button>
+      </div>
+    </div>
+
+    <div class="post-screen" id="postScreen">
+      <div class="post-header">
+        <button class="back-btn" onclick="showFeed()">&#8592;</button>
+        <span class="post-title">新しい投稿</span>
+        <button class="do-post-btn" id="doPostBtn" onclick="submitPost()">投稿</button>
+      </div>
+      <div class="post-body">
+        <div class="img-zone" id="imgZone" onclick="triggerFile()">
+          <input type="file" id="fileInput" accept="image/*" onchange="handleFile(event)">
+          <span class="zone-icon">&#128247;</span>
+          <span class="zone-hint">写真を追加する（任意）</span>
+        </div>
+        <div class="comment-field">
+          <input type="text" id="commentInput" placeholder="一言コメントを入力..." maxlength="80">
+        </div>
+        <div class="auto-tags">
+          <div class="auto-tag">&#128336; <span id="autoTime">--</span></div>
+          <div class="auto-tag">&#128205; <span id="autoStore">--</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-screen" id="settingsScreen">
+      <div class="post-header">
+        <button class="back-btn" onclick="showFeed()">&#8592;</button>
+        <span class="post-title">設定</span>
+      </div>
+      <div class="settings-body">
+        <div>
+          <div class="set-label">店舗名 / 部署名</div>
+          <input class="set-input" type="text" id="storeInput" placeholder="例：新宿店、第2営業部">
+        </div>
+        <button class="save-btn" onclick="saveStore()">保存する</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let posts=[];
+let storeName='';
+let previewUrl=null;
+
+function clock(){
+  const d=new Date();
+  const h=String(d.getHours()).padStart(2,'0');
+  const m=String(d.getMinutes()).padStart(2,'0');
+  document.getElementById('clockDisplay').textContent=h+':'+m;
+}
+clock();setInterval(clock,30000);
+
+function nowLabel(){
+  const d=new Date();
+  return d.toLocaleDateString('ja-JP',{month:'short',day:'numeric'})+' '+d.toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'});
+}
+function fmtDate(iso){
+  const diff=Math.floor((Date.now()-new Date(iso))/60000);
+  if(diff<1)return 'たった今';
+  if(diff<60)return diff+'分前';
+  if(diff<1440)return Math.floor(diff/60)+'時間前';
+  if(diff<2880)return '昨日';
+  const d=new Date(iso);
+  return d.toLocaleDateString('ja-JP',{month:'short',day:'numeric'});
+}
+
+async function load(){
+  try{
+    const r=await window.storage.get('mss_posts_v1',true);
+    if(r&&r.value)posts=JSON.parse(r.value);
+    const s=await window.storage.get('mss_store',false);
+    if(s&&s.value)storeName=s.value;
+  }catch(e){}
+  renderFeed();
+}
+async function savePosts(){
+  try{await window.storage.set('mss_posts_v1',JSON.stringify(posts),true);}catch(e){}
+}
+
+function renderFeed(){
+  const area=document.getElementById('feedArea');
+  const sorted=[...posts].sort((a,b)=>new Date(b.date)-new Date(a.date));
+  if(!sorted.length){
+    area.innerHTML='<div class="empty-feed"><div class="big">&#127775;</div>まだ投稿がありません<br>最初の事例を投稿しましょう！</div>';
+    return;
+  }
+  area.innerHTML=sorted.map(p=>`
+    <div class="post-card">
+      ${p.img?`<img class="card-img" src="${p.img}" alt="">`:''}
+      <div class="card-info">
+        ${p.comment?`<div class="card-comment">${esc(p.comment)}</div>`:''}
+        <div class="card-meta">
+          <div class="meta-store">
+            <span class="store-tag">&#128205; ${esc(p.store||'不明')}</span>
+            <span class="meta-time">${fmtDate(p.date)}</span>
+          </div>
+          <div class="like-row">
+            <button class="like-btn${p.liked?' liked':''}" onclick="like('${p.id}')">
+              ${p.liked?'&#9733;':'&#9734;'} ${p.likes}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+async function like(id){
+  const p=posts.find(x=>x.id===id);if(!p)return;
+  p.liked=!p.liked;p.likes+=p.liked?1:-1;
+  await savePosts();renderFeed();
+}
+
+function showFeed(){
+  document.getElementById('feedScreen').classList.add('active');
+  document.getElementById('postScreen').classList.remove('active');
+  document.getElementById('settingsScreen').classList.remove('active');
+}
+function showPost(){
+  previewUrl=null;
+  document.getElementById('commentInput').value='';
+  document.getElementById('fileInput').value='';
+  const z=document.getElementById('imgZone');
+  z.classList.remove('filled');
+  z.innerHTML='<input type="file" id="fileInput" accept="image/*" onchange="handleFile(event)"><span class="zone-icon">&#128247;</span><span class="zone-hint">写真を追加する（任意）</span>';
+  document.getElementById('autoTime').textContent=nowLabel();
+  document.getElementById('autoStore').textContent=storeName||'店舗未設定';
+  document.getElementById('feedScreen').classList.remove('active');
+  document.getElementById('postScreen').classList.add('active');
+  document.getElementById('settingsScreen').classList.remove('active');
+}
+function showSettings(){
+  document.getElementById('storeInput').value=storeName;
+  document.getElementById('feedScreen').classList.remove('active');
+  document.getElementById('postScreen').classList.remove('active');
+  document.getElementById('settingsScreen').classList.add('active');
+}
+async function saveStore(){
+  const v=document.getElementById('storeInput').value.trim();
+  if(!v){return;}
+  storeName=v;
+  try{await window.storage.set('mss_store',storeName,false);}catch(e){}
+  showFeed();
+}
+function triggerFile(){document.getElementById('fileInput').click();}
+function handleFile(e){
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=ev=>{
+    const img=new Image();
+    img.onload=()=>{
+      const sc=Math.min(1,800/img.width);
+      const cv=document.createElement('canvas');
+      cv.width=Math.round(img.width*sc);cv.height=Math.round(img.height*sc);
+      cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height);
+      previewUrl=cv.toDataURL('image/jpeg',.78);
+      const z=document.getElementById('imgZone');
+      z.classList.add('filled');
+      z.innerHTML=`<input type="file" id="fileInput" accept="image/*" onchange="handleFile(event)"><img src="${previewUrl}" alt="preview">`;
+    };
+    img.src=ev.target.result;
+  };
+  r.readAsDataURL(f);
+}
+async function submitPost(){
+  const comment=document.getElementById('commentInput').value.trim();
+  if(!previewUrl&&!comment)return;
+  const btn=document.getElementById('doPostBtn');
+  btn.disabled=true;btn.textContent='投稿中...';
+  posts.unshift({id:'p'+Date.now(),img:previewUrl||null,comment,store:storeName||'不明',date:new Date().toISOString(),likes:0,liked:false});
+  await savePosts();
+  showFeed();renderFeed();
+  btn.disabled=false;btn.textContent='投稿';
+}
+load();
+</script>
